@@ -4,8 +4,14 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 class ItemRepo:
- #asynchronous function to perform various crud operations
-#  create function should be asynchronous it takes database as parameter and required parameter to create the instance or object
+ 
+ """
+ Asynchronous function to perform various crud operations
+ Create function should be asynchronous it takes database as parameter and required parameter to create the instance or object
+ writing the query to access the database for the ItemRepo
+
+ """
+
  async def create(db:Session, item: schemas.ItemCreate):
      db_item = models.Item(name= item.name, price = item.price, description= item.description, store_id = item.store_id)
      db.add(db_item)
@@ -30,6 +36,10 @@ async def update(db:Session, item_data):
     return updated_item
 
 class StoreRepo:
+    """
+    Similarly defining the functions to perform the CRUD operations
+
+    """
     async def create(db:Session,store: schemas.StoreCreate):
         db_store = models.Store(name = store.name)
         db.add(db_store)

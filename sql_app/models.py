@@ -5,9 +5,15 @@ from db import Base
 
 
 
-
-
 class Item(Base):
+
+
+    """
+    Creating the Item class to store the details of the Item 
+    it includes id, name, price, store_id
+
+    
+    """
     __tablename__="items"
 
     id = Column(Integer, primary_key= True, index = True)
@@ -19,6 +25,13 @@ class Item(Base):
         return 'ItemModel(name = %s, price=%s,store_id=%s)' %(self.name, self.price, self.id)
 
 class Store(Base):
+
+    """
+    Creating the Store class to store  the details of the Store
+    It stores the name, items along with the id
+    the items column have the relationship with the column store_id 
+    
+    """
     __tablename__ = "stores"
 
     id =  Column(Integer, primary_key=True, index = True)
