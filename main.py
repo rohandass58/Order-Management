@@ -46,14 +46,6 @@ def get_item(item_id:int, db: Session= Depends(get_db)):
         raise HTTPException(status_code=404, detail="Item not found with the given ID")
     return db_item
 
-@app.delete('/items/{item_id}', tags=["Item"])
-def delete_item(item_id: int, db: Session = Depends(get_db)):
-    db_item =
-
-
-
-
-
 
 @app.delete('/items/{item_id}', tags=["Item"])
 async def delete_item(item_id: int,db: Session = Depends(get_db)):
