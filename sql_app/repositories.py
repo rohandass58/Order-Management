@@ -48,9 +48,9 @@ class StoreRepo:
         return db_store
     
     def fetch_by_id(db: Session, _id: int):
-        return db.query(models.Store).filter(models.Item.id== models.Store.id).first()
+        return db.query(models.Store).filter(models.Store.id == _id).first()
     def fetch_by_name(db:Session, name:str):
-        return db.query(models.Store.filter(models.Store.name == name)).first()
+        return db.query(models.Store).filter(models.Store.name == name).first()
     def fetch_all(db:Session, skip: int = 0, limit: int =100):
         return db.query(models.Store).offset(skip).limit(limit).all()
     

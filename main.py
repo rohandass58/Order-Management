@@ -29,8 +29,10 @@ def validation_exception_handler(request, err):
     return JSONResponse(status_code=400, content={"message": f"{base_error_message}. Detail: {err}"})
 
 @app.post("/items", tags= ["Item"], response_model= schemas.Item, status_code=201)
-async def create_item(item_request: schemas.ItemsCreate, db:Session= Depends(get_db)):
-    """ Handling the post request"""
+async def create_item(item_request: schemas.ItemCreate, db:Session= Depends(get_db)):
+    """ 
+    Handling the post request to send the data over the network
+    """
     db_item = ItemRepo.fetch_by_name(db, name= item_request.name)
     if db_item:
         raise HTTPException(status_code=400, detail="Item already exist")
@@ -38,7 +40,9 @@ async def create_item(item_request: schemas.ItemsCreate, db:Session= Depends(get
 
 @app.get("/items/", tags=["Item"], response_model=List[schemas.Item])
 def get_all_items(name:Optional[str] = None, db: Session= Depends(get_db)):
-    """ Handling the get  request to display all the itens"""
+    """ 
+    Handling the get  request to display all the itens
+    """
 
     if name:
         items = []
@@ -51,7 +55,9 @@ def get_all_items(name:Optional[str] = None, db: Session= Depends(get_db)):
 @app.get('items/{item_id}', tags = ["Item"],response_model=List[schemas.Item])
 def get_item(item_id:int, db: Session= Depends(get_db)):
 
-    """Retrieving the particular item based on the id """
+    """
+    Retrieving the particular item based on the id 
+    """
     db_item = ItemRepo.fetch_by_id(db,id)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found with the given ID")

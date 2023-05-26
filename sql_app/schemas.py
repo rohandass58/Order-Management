@@ -9,7 +9,7 @@ class ItemBase(BaseModel):
 
 #value of optiona;_str variable will be either any string or None
 
-class ItemCreate(BaseModel):
+class ItemCreate(ItemBase):
     pass
 
 class Item(ItemBase):
