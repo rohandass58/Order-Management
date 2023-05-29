@@ -4,7 +4,7 @@ from sql_app import models
 from db import get_db, engine
 import sql_app.models as models
 import sql_app.schemas as schemas
-from sql_app.repositories import ItemRepo, StoreRepo
+from sql_app.repositories import ItemRepo, StoreRepo, OrderRepo, CustomerRepo
 from sqlalchemy.orm import Session
 import uvicorn
 from typing import List,Optional
@@ -138,6 +138,81 @@ async def delete_store(store_id: int,db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Store not found with the given ID")
     await StoreRepo.delete(db,store_id)
     return "Store deleted successfully!"
+
+@app.post("/orders", tags=["Order"], response_model=schemas.Order, status_code=201)
+async def create_order(order_request: schemas.OrderCreate, db: Session = Depends(get_db)):
+    """
+    Create an Order and save it in the database
+    """
+    db_order = OrderRepo.fetch_by_name(db, name=order_request.name)
+    if db_order:
+        raise HTTPException(status_code=400, detail="Order already exists!")
+
+    return await OrderRepo.create(db=db, order=order_request)
+
+@app.post("/customers", tags=["Customer"], response_model=schemas.Customer, status_code=201)
+async def create_customer(customer_request: schemas.CustomerCreate, db: Session = Depends(get_db)):
+    """
+    Create a Customer and save it in the database
+    """
+    db_customer = CustomerRepo.fetch_by_name(db, name=customer_request.name)
+    if db_customer:
+        raise HTTPException(status_code=400, detail="Customer already exists!")
+
+    return await CustomerRepo.create(db=db, customer=customer_request)
+
+
+@app.get("/customers", tags=["Customer"], response_model=List[schemas.Customer])
+def get_all_customers(name: Optional[str] = None, db: Session = Depends(get_db)):
+    """
+    Get all the Customers stored in the database
+    """
+    if name:
+        customers = []
+        db_customer = CustomerRepo.fetch_by_name(db, name)
+        customers.append(db_customer)
+        return customers
+    else:
+        return CustomerRepo.fetch_all(db)
+
+
+@app.get("/customers/{customer_id}", tags=["Customer"], response_model=schemas.Customer)
+def get_customer(customer_id: int, db: Session = Depends(get_db)):
+    """
+    Get the Customer with the given ID stored in the database
+    """
+    db_customer = CustomerRepo.fetch_by_id(db, customer_id)
+    if db_customer is None:
+        raise HTTPException(status_code=404, detail="Customer not found with the given ID")
+    return db_customer
+
+
+@app.delete("/customers/{customer_id}", tags=["Customer"])
+async def delete_customer(customer_id: int, db: Session = Depends(get_db)):
+    """
+    Delete the Customer with the given ID stored in the database
+    """
+    db_customer = CustomerRepo.fetch_by_id(db, customer_id)
+    if db_customer is None:
+        raise HTTPException(status_code=404, detail="Customer not found with the given ID")
+    await CustomerRepo.delete(db, customer_id)
+    return "Customer deleted successfully!"
+
+
+@app.put("/customers/{customer_id}", tags=["Customer"], response_model=schemas.Customer)
+async def update_customer(customer_id: int, customer_request: schemas.Customer, db: Session = Depends(get_db)):
+    """
+    Update a Customer stored in the database
+    """
+    db_customer = CustomerRepo.fetch_by_id(db, customer_id)
+    if db_customer:
+        update_customer_encoded = jsonable_encoder(customer_request)
+        db_customer.name = update_customer_encoded["name"]
+        db_customer.phoneNumber = update_customer_encoded["phoneNumber"]
+        return await CustomerRepo.update(db=db, customer_data=db_customer)
+    else:
+        raise HTTPException(status_code=400, detail="Customer not found with the given ID")
+
     
 
 if __name__ == "__main__":

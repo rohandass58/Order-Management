@@ -1,7 +1,16 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Float
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, DateTime
 from sqlalchemy.orm import relationship
+import datetime
 
 from db import Base
+class Customers(Base):
+    __tablename__ = "customers"
+    id = Column(Integer, primary_key=True,index=True)
+    name = Column(String(80), nullable=False, unique=True,index=True)
+    def __repr__(self):
+        return 'Customers(name=%s,)' % (self.name)
+
+
     
 class Item(Base):
     __tablename__ = "items"
@@ -22,3 +31,17 @@ class Store(Base):
 
     def __repr__(self):
         return 'Store(name=%s)' % self.name
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True, index= True)
+    name = Column(String(255))
+    customer_id = Column(Integer, foreign_key="Customers.id")
+    item_id = Column(Integer, foreign_key="Item.id")
+    quantity = Column(Integer)
+    created_at = Column(DateTime, default=datetime.datetime.now())
+    updated_at = Column(DateTime, default=datetime.datetime.now(), onupdate=datetime.datetime.now())
+    customer = relationship("Customers", backref="Order")
+    item = relationship("Item",backref="Item")
+    
